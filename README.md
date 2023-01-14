@@ -13,7 +13,8 @@ After configuring an example AWS S3 bucket, the directory structure should match
 └── testing/
     ├── download/
     │   └── example.txt
-    └── upload/
+    ├── upload/
+    └── example.txt
 ```
 
 The example.txt file, which is a very simple file, can be found in the `sample-files` directory.

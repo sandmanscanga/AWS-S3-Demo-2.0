@@ -9,18 +9,26 @@ from utils import get_auth_keys, get_bucket_info
 def main(args: argparse.Namespace) -> None:
     """Execute the main process."""
 
+    print("[*] Fetching auth keys and bucket info.")
     access_key, secret_key = get_auth_keys(args)
     bucket_info_dict = get_bucket_info(args)
 
+    print("[*] Creating local directory for downloaded files.")
     if bucket_info_dict["local_path"]:
         os.makedirs(bucket_info_dict["local_path"], exist_ok=True)
 
-    client = S3Client(access_key, secret_key)
+    print("[*] Starting the S3 client.")
+    client = S3Client(access_key,
+                      secret_key,
+                      bucket=bucket_info_dict["bucket_name"],
+                      prefix=bucket_info_dict["dir_path"])
 
+    print("[*] Executing the 'ls' and 'cd' commands.")
     client.ls(bucket_info_dict["dir_path"])
     client.cd(bucket_info_dict["bucket_name"],
               bucket_info_dict["dir_path"])
 
+    print("[*] Executing 'get' and 'put' operations.")
     client.get(bucket_info_dict["bucket_name"],
                bucket_info_dict["download_path"],
                bucket_info_dict["local_path"])
@@ -28,11 +36,13 @@ def main(args: argparse.Namespace) -> None:
                bucket_info_dict["upload_path"],
                bucket_info_dict["local_path"])
 
+    print("[*] Executing 'stat' and 'is_dir' operations.")
     stats = client.stat(bucket_info_dict["bucket_name"],
                         bucket_info_dict["download_path"])
     is_dir = client.is_dir(bucket_info_dict["bucket_name"],
                            bucket_info_dict["dir_path"])
 
+    print("[*] Displaying 'stat' and 'is_dir' results.")
     print(f"stats = {stats!r}")
     print(f"is_dir = {is_dir!r}")
 

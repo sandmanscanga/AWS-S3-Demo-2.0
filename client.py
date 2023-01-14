@@ -5,13 +5,23 @@ import boto3
 class S3Client:
     """AWS S3 client wrapper utility."""
 
-    def __init__(self, access_key: str, secret_key: str) -> None:
+    def __init__(self,
+                 access_key: str,
+                 secret_key: str,
+                 bucket: str = "",
+                 prefix: str = ""
+                 ) -> None:
         """
         Initialize S3 client object.
 
         :param access_key: AWS access key
         :param secret_key: AWS secret key
+        :param bucket: AWS bucket name (optional)
+        :param prefix: AWS bucket directory path (optional)
         """
+
+        self.bucket = bucket
+        self.prefix = prefix
 
         self.s3 = boto3.client("s3",
                                aws_access_key_id=access_key,
@@ -109,7 +119,7 @@ class S3Client:
 
         if prefix is None:
             prefix = self.prefix
-        
+
         result = self.s3.list_objects(Bucket=self.bucket, Prefix=prefix)
         
         contents = []

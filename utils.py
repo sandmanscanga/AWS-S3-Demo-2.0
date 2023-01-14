@@ -1,6 +1,7 @@
 """Module containing the S3 client utilities."""
 import argparse
 import os
+import sys
 from typing import Dict, Tuple
 
 
@@ -15,14 +16,22 @@ def get_auth_keys(args: argparse.Namespace,
         try:
             access_key = os.environ[env_access_key_name]
         except KeyError:
-            access_key = input("Enter the access key: ")
+            try:
+                access_key = input("Enter the access key: ")
+            except KeyboardInterrupt:
+                print("\n[!] Exiting...")
+                sys.exit(1)
 
     secret_key = args.secret_key
     if not secret_key:
         try:
             secret_key = os.environ[env_secret_key_name]
         except KeyError:
-            secret_key = input("Enter the secret key: ")
+            try:
+                secret_key = input("Enter the secret key: ")
+            except KeyboardInterrupt:
+                print("\n[!] Exiting...")
+                sys.exit(1)
 
     return access_key, secret_key
 

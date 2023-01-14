@@ -1,5 +1,6 @@
 """Module containing the functionality to test the AWS S3 client utility."""
 import argparse
+import os
 
 from client import S3Client
 from utils import get_auth_keys, get_bucket_info
@@ -10,6 +11,9 @@ def main(args: argparse.Namespace) -> None:
 
     access_key, secret_key = get_auth_keys(args)
     bucket_info_dict = get_bucket_info(args)
+
+    if bucket_info_dict["local_path"]:
+        os.makedirs(bucket_info_dict["local_path"], exist_ok=True)
 
     client = S3Client(access_key, secret_key)
 

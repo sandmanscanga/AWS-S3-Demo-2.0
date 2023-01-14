@@ -11,8 +11,8 @@ def main(args: argparse.Namespace) -> None:
     access_key, secret_key = get_auth_keys(args)
 
     bucket_name = args.bucket_name
-    dir_path = args.dir_path
     local_path = args.local_path
+    dir_path = args.dir_path
     download_path = args.download_path
     upload_path = args.upload_path
 

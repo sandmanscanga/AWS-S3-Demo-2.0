@@ -2,30 +2,32 @@
 import argparse
 
 from client import S3Client
-from utils import get_auth_keys
+from utils import get_auth_keys, get_bucket_info
 
 
 def main(args: argparse.Namespace) -> None:
     """Execute the main process."""
 
     access_key, secret_key = get_auth_keys(args)
-
-    bucket_name = args.bucket_name
-    local_path = args.local_path
-    dir_path = args.dir_path
-    download_path = args.download_path
-    upload_path = args.upload_path
+    bucket_info_dict = get_bucket_info(args)
 
     client = S3Client(access_key, secret_key)
 
-    client.ls(dir_path)
-    client.cd(bucket_name, dir_path)
+    client.ls(bucket_info_dict["dir_path"])
+    client.cd(bucket_info_dict["bucket_name"],
+              bucket_info_dict["dir_path"])
 
-    client.get(bucket_name, download_path, local_path)
-    client.put(bucket_name, upload_path, local_path)
+    client.get(bucket_info_dict["bucket_name"],
+               bucket_info_dict["download_path"],
+               bucket_info_dict["local_path"])
+    client.put(bucket_info_dict["bucket_name"],
+               bucket_info_dict["upload_path"],
+               bucket_info_dict["local_path"])
 
-    stats = client.stat(bucket_name, download_path)
-    is_dir = client.is_dir(bucket_name, dir_path)
+    stats = client.stat(bucket_info_dict["bucket_name"],
+                        bucket_info_dict["download_path"])
+    is_dir = client.is_dir(bucket_info_dict["bucket_name"],
+                           bucket_info_dict["dir_path"])
 
     print(f"stats = {stats!r}")
     print(f"is_dir = {is_dir!r}")

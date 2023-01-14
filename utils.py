@@ -38,8 +38,8 @@ def get_auth_keys(args: argparse.Namespace,
 
 def get_bucket_info(args: argparse.Namespace,
                     env_bucket_key_name: str = "S3_BUCKET_NAME",
-                    env_dir_path_key_name: str = "S3_LOCAL_PATH",
-                    env_local_path_key_name: str = "S3_DIR_PATH",
+                    env_local_path_key_name: str = "S3_LOCAL_PATH",
+                    env_dir_path_key_name: str = "S3_DIR_PATH",
                     env_download_path_key_name: str = "S3_DOWNLOAD_PATH",
                     env_upload_path_key_name: str = "S3_UPLOAD_PATH"
                     ) -> Dict[str, str]:

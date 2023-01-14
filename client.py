@@ -1,5 +1,8 @@
 """Module containing the AWS S3 client utility."""
+import os
+
 import boto3
+import botocore
 
 
 class S3Client:
@@ -49,28 +52,7 @@ class S3Client:
 
         self.s3.upload_file(local_path, bucket, key)
 
-    def cd(self, bucket: str, prefix: str) -> None:
-        """
-        Set the current "directory" in S3.
-
-        :param bucket: S3 bucket name
-        :param prefix: S3 prefix (directory path)
-        """
-
-        self.bucket = bucket
-        self.prefix = prefix
-
-    def mkdir(self, bucket: str, prefix: str) -> None:
-        """
-        Create an "empty" directory in S3.
-
-        :param bucket: S3 bucket name
-        :param prefix: S3 prefix (directory path)
-        """
-
-        self.s3.put_object(Bucket=bucket, Key=prefix)
-
-    def is_dir(self, bucket: str, prefix: str) -> bool:
+    def is_dir(self, bucket: str, key: str) -> bool:
         """
         Check if a "directory" exists in S3.
 
@@ -82,11 +64,11 @@ class S3Client:
         is_dir_flag = None
 
         try:
-            self.s3.list_objects(Bucket=bucket, Prefix=prefix)
-        except:
-            is_dir_flag = False
-        else:
+            self.s3.head_object(Bucket=bucket, Key=key)
+        except botocore.exceptions.ClientError:
             is_dir_flag = True
+        else:
+            is_dir_flag = False
 
         return is_dir_flag
 
@@ -103,8 +85,8 @@ class S3Client:
 
         stat_dict = {
             "size": obj["ContentLength"],
-            "ETag": obj["ETag"],
-            "LastModified": obj["LastModified"]
+            "timestamp": str(obj["LastModified"])
+            # "timestamp": int(obj["LastModified"].timestamp())
         }
 
         return stat_dict
@@ -120,10 +102,13 @@ class S3Client:
         if prefix is None:
             prefix = self.prefix
 
-        result = self.s3.list_objects(Bucket=self.bucket, Prefix=prefix)
+        results = self.s3.list_objects(Bucket=self.bucket, Prefix=prefix)
         
-        contents = []
-        for content in result.get("Contents", []):
-            contents.append(content.get("Key"))
+        _contents = set()
+        for result in results.get("Contents", []):
+            _content = result.get("Key")
+            if not _content.rstrip("/") == prefix.rstrip("/"):
+                content = _content.split(os.path.sep)[1]
+                _contents.add(content)
 
-        return contents
+        return sorted(_contents)
